@@ -1,0 +1,232 @@
+﻿@using System.Linq
+@using System.Text.Json
+@model IEnumerable<ModelEarth.Models.Data.Trade>
+
+@{
+    ViewData["Title"] = "Trade Search";
+
+    var jsonOptions = new JsonSerializerOptions { WriteIndented = false };
+    var rowsJson = (Model != null && Model.Any())
+        ? JsonSerializer.Serialize(Model, jsonOptions)
+        : "[]";
+}
+
+
+<link href="https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.5/dist/css/tabulator.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
+
+<style>
+  #multiSelect { display: grid; gap: 16px; max-width: 960px; margin: 16px 0; }
+  .dropdown { position: relative; width: 100%; max-width: 420px; }
+  .select-box { border: 1px solid #ccc; border-radius: 6px; padding: 10px 12px; cursor: pointer; background:#fff; }
+  .select-box span { user-select: none; }
+  .options {
+    display: none; position: absolute; z-index: 10; background: #fff; border: 1px solid #ddd; border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.08); padding: 8px 10px; margin-top: 6px; max-height: 300px; overflow: auto; width: 100%;
+  }
+  .dropdown.active .options { display: block; }
+  .options label { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: 4px; }
+  .options label:hover { background: #f6f6f6; }
+  #actions { margin: 8px 0 16px; display: flex; gap: 8px; align-items:center; flex-wrap: wrap; }
+  #searchBtn { padding: 8px 14px; border: 1px solid #1a73e8; color: #fff; background: #1a73e8; border-radius: 6px; cursor: pointer; }
+  #searchBtn:disabled { opacity: .6; cursor: default; }
+  #grid { margin-top: 6px; }
+</style>
+
+<h2>Trade Search</h2>
+
+<noscript style="color:#c00">This page needs JavaScript to build the dropdowns.</noscript>
+
+<form method="post" asp-action="TradeView">
+  @Html.AntiForgeryToken()
+
+  <div id="multiSelect">
+    <div>
+      <p><strong>Year</strong></p>
+      <div class="dropdown" id="years-dropdown">
+        <div class="select-box"><span>Select options</span></div>
+        <div class="options"></div>
+      </div>
+    </div>
+
+    <div>
+      <p><strong>Region 1</strong></p>
+      <div class="dropdown" id="region1-dropdown">
+        <div class="select-box"><span>Select options</span></div>
+        <div class="options"></div>
+      </div>
+    </div>
+
+    <div>
+      <p><strong>Region 2</strong></p>
+      <div class="dropdown" id="region2-dropdown">
+        <div class="select-box"><span>Select options</span></div>
+        <div class="options"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="actions">
+    <button id="searchBtn" type="submit">Search</button>
+    <span id="status" style="color:#666"></span>
+
+    <!-- Optional export buttons -->
+    <button type="button" id="csvBtn"  style="margin-left:8px;">Download CSV</button>
+    <button type="button" id="xlsxBtn">Download XLSX</button>
+  </div>
+</form>
+
+<!-- Tabulator grid -->
+<div id="grid"></div>
+
+<script>
+  // rows from server after POST (embedded safely by Razor)
+  const serverRows = @Html.Raw(rowsJson);
+</script>
+
+<script type="module">
+/* -------------------------------------------------------------
+   LOOKUPS (client-side) — loads from /wwwroot/lookups/*.json
+   Files expected:
+     /lookups/years.json   -> [2000,2001,...]
+     /lookups/regions.json -> ["US","CN",...]
+-------------------------------------------------------------- */
+
+async function getJson(url) {
+  const r = await fetch(url, { cache: 'no-cache' });
+  if (!r.ok) throw new Error(`GET ${url} -> HTTP ${r.status}`);
+  return r.json();
+}
+
+const STORAGE_KEYS = {
+  years:   'tv_years',
+  region1: 'tv_region1',
+  region2: 'tv_region2'
+};
+
+function saveSelections() {
+  sessionStorage.setItem(STORAGE_KEYS.years,   JSON.stringify(getSelected('#years-dropdown')));
+  sessionStorage.setItem(STORAGE_KEYS.region1, JSON.stringify(getSelected('#region1-dropdown')));
+  sessionStorage.setItem(STORAGE_KEYS.region2, JSON.stringify(getSelected('#region2-dropdown')));
+}
+function restoreSelections() {
+  try {
+    const y  = JSON.parse(sessionStorage.getItem(STORAGE_KEYS.years)   || '[]');
+    const r1 = JSON.parse(sessionStorage.getItem(STORAGE_KEYS.region1) || '[]');
+    const r2 = JSON.parse(sessionStorage.getItem(STORAGE_KEYS.region2) || '[]');
+    checkValues('#years-dropdown', y);
+    checkValues('#region1-dropdown', r1);
+    checkValues('#region2-dropdown', r2);
+  } catch { /* ignore */ }
+}
+
+function getSelected(rootSel) {
+  return Array.from(document.querySelectorAll(`${rootSel} input[type="checkbox"]:checked`)).map(cb => cb.value);
+}
+function checkValues(rootSel, values) {
+  const set = new Set(values ?? []);
+  document.querySelectorAll(`${rootSel} input[type="checkbox"]`).forEach(cb => {
+    cb.checked = set.has(cb.value);
+    cb.dispatchEvent(new Event('change', { bubbles: true })); // update label text
+  });
+}
+
+// Append checkbox options into a dropdown container
+function mountOptions(containerSelector, items, name){
+  const container = document.querySelector(containerSelector);
+  items.forEach(it => {
+    const label = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.name = name;           // IMPORTANT for MVC binding (arrays)
+    cb.value = it.value;
+    label.appendChild(cb);
+    label.append(' ' + it.label);
+    container.appendChild(label);
+  });
+}
+
+// Generic multiselect dropdown wiring
+function wireDropdown(dropdown) {
+  const box = dropdown.querySelector('.select-box');
+  const labelSpan = dropdown.querySelector('.select-box span');
+  const options = dropdown.querySelector('.options');
+
+  box.addEventListener('click', () => {
+    document.querySelectorAll('.dropdown').forEach(dd => {
+      if (dd !== dropdown) dd.classList.remove('active');
+    });
+    dropdown.classList.toggle('active');
+  });
+
+  options.addEventListener('change', (e) => {
+    if (!e.target.matches('input[type="checkbox"]')) return;
+    const selected = Array.from(options.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
+    if (!selected.length) labelSpan.textContent = 'Select options';
+    else if (selected.length < 4) labelSpan.textContent = selected.join(', ') + (selected.length === 3 ? ' ...' : '');
+    else labelSpan.textContent = `${selected.length} selected`;
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) dropdown.classList.remove('active');
+  });
+}
+
+async function loadLookups() {
+  const yearsUrl   = '/lookups/years.json';
+  const regionsUrl = '/lookups/regions.json';
+
+  const [years, regions] = await Promise.all([ getJson(yearsUrl), getJson(regionsUrl) ]);
+
+  // years
+  mountOptions('#years-dropdown .options', years.map(y => ({ value: String(y), label: String(y) })), 'Years');
+
+  // region1 & region2 use the same list
+  const regionItems = regions.map(r => ({ value: r, label: r }));
+  mountOptions('#region1-dropdown .options', regionItems, 'Region1');
+  mountOptions('#region2-dropdown .options', regionItems, 'Region2');
+
+  // enable dropdown behavior
+  wireDropdown(document.getElementById('years-dropdown'));
+  wireDropdown(document.getElementById('region1-dropdown'));
+  wireDropdown(document.getElementById('region2-dropdown'));
+
+  // restore last selections (survive postback)
+  restoreSelections();
+}
+
+await loadLookups();
+
+/* -------------------------------------------------------------
+   TABULATOR — render rows returned from the server (after POST)
+-------------------------------------------------------------- */
+let table = new Tabulator("#grid", {
+  data: serverRows,          // rows embedded by Razor
+  layout: "fitDataStretch",  // or "fitColumns"
+  height: "65vh",
+  autoColumns: true,         // infer columns from data keys, avoids naming mismatches
+  pagination: "local",
+  paginationSize: 25,
+  movableColumns: true,
+  resizableRows: true,
+});
+
+// Optional: CSV/XLSX export
+document.getElementById('csvBtn').addEventListener('click', () => {
+  table.download("csv", "trades.csv");
+});
+document.getElementById('xlsxBtn').addEventListener('click', () => {
+  table.download("xlsx", "trades.xlsx", { sheetName: "Trades" });
+});
+
+/* -------------------------------------------------------------
+   FORM — save selections right before submit so they persist
+-------------------------------------------------------------- */
+document.querySelector('form[method="post"]').addEventListener('submit', () => {
+  saveSelections();
+  const btn = document.getElementById('searchBtn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+  status.textContent = 'Searching...';
+});
+</script>

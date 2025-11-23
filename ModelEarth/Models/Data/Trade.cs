@@ -12,6 +12,10 @@
         public string Industry2 { get; set; } = "";  // text
 
         public decimal Amount { get; set; }     // numeric(20,*)
+
+        // New properties for import system
+        public string TradeflowType { get; set; } = "";  // "imports", "exports", "domestic"
+        public string? SourceFile { get; set; }          // Track CSV source file
     }
 
 }

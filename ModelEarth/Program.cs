@@ -1,7 +1,17 @@
+// Load .env file for environment variables
+dotenv.net.DotEnv.Load(options: new dotenv.net.DotEnvOptions(
+    envFilePaths: new[] { "../.env", ".env" },
+    ignoreExceptions: true
+));
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register our services for dependency injection
+builder.Services.AddScoped<ModelEarth.Services.ICsvImportService, ModelEarth.Services.CsvImportService>();
+builder.Services.AddScoped<ModelEarth.Services.ITradeDataRepository, ModelEarth.Services.TradeDataRepository>();
 
 var app = builder.Build();
 

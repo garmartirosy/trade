@@ -1,0 +1,247 @@
+@{
+    ViewData["Title"] = "Trade Data Import";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4">Trade Data Import</h1>
+    <p class="lead">Import CSV trade data files into the PostgreSQL database</p>
+
+    <!-- Import Configuration Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Import Configuration</h5>
+        </div>
+        <div class="card-body">
+            <form id="importForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="yearSelect" class="form-label">Year</label>
+                            <select class="form-select" id="yearSelect" required>
+                                <option value="">Select a year...</option>
+                                <option value="2019">2019</option>
+                                <option value="2022">2022</option>
+                            </select>
+                            <div class="form-text">Select the year of trade data to import</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="countriesInput" class="form-label">Countries (Optional)</label>
+                            <input type="text" class="form-control" id="countriesInput"
+                                   placeholder="US, IN, CN (leave blank for all)">
+                            <div class="form-text">Comma-separated country codes. Leave blank to import all countries.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="clearExistingData">
+                        <label class="form-check-label" for="clearExistingData">
+                            Clear existing data for this year before importing
+                        </label>
+                        <div class="form-text text-warning">
+                            <strong>Warning:</strong> This will delete all existing data for the selected year.
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" id="createDatabaseBtn">
+                    <i class="bi bi-database-fill-add"></i> Create Database
+                </button>
+                <button type="button" class="btn btn-secondary" id="testConnectionBtn">
+                    <i class="bi bi-link-45deg"></i> Test Connection
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Progress Card (hidden by default) -->
+    <div class="card mb-4 d-none" id="progressCard">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Import Progress</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <strong>Status:</strong> <span id="importStatus">-</span>
+            </div>
+            <div class="mb-3">
+                <strong>Current Step:</strong> <span id="currentStep">-</span>
+            </div>
+            <div class="mb-3">
+                <strong>Records Imported:</strong> <span id="recordsImported">0</span>
+            </div>
+            <div class="mb-3">
+                <strong>Countries Processed:</strong> <span id="countriesProcessed">0</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar" id="progressBar" style="width: 0%">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Database Statistics</h5>
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-info mb-3" id="loadStatsBtn">
+                <i class="bi bi-bar-chart-fill"></i> Load Statistics
+            </button>
+            <div id="statisticsContent">
+                <p class="text-muted">Click "Load Statistics" to view database statistics</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let currentJobId = null;
+    let pollInterval = null;
+
+    // Create Database
+    document.getElementById('importForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const year = parseInt(document.getElementById('yearSelect').value);
+        const countriesInput = document.getElementById('countriesInput').value.trim();
+        const clearExistingData = document.getElementById('clearExistingData').checked;
+
+        if (!year) {
+            alert('Please select a year');
+            return;
+        }
+
+        const countries = countriesInput ?
+            countriesInput.split(',').map(c => c.trim().toUpperCase()).filter(c => c) :
+            null;
+
+        const requestData = {
+            year: year,
+            countries: countries,
+            clearExistingData: clearExistingData
+        };
+
+        try {
+            const response = await fetch('/api/tradeimport/create-database', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                currentJobId = data.jobId;
+                document.getElementById('progressCard').classList.remove('d-none');
+                startPolling(currentJobId);
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error starting import: ' + error.message);
+        }
+    });
+
+    // Poll for import status
+    function startPolling(jobId) {
+        if (pollInterval) clearInterval(pollInterval);
+
+        pollInterval = setInterval(async () => {
+            try {
+                const response = await fetch(`/api/tradeimport/status/${jobId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    updateProgress(data);
+
+                    if (data.status === 'Completed' || data.status === 'Failed') {
+                        clearInterval(pollInterval);
+                        if (data.status === 'Completed') {
+                            document.getElementById('progressBar').classList.remove('progress-bar-animated');
+                            document.getElementById('progressBar').classList.add('bg-success');
+                        } else {
+                            document.getElementById('progressBar').classList.add('bg-danger');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error polling status:', error);
+            }
+        }, 2000); // Poll every 2 seconds
+    }
+
+    function updateProgress(data) {
+        document.getElementById('importStatus').textContent = data.status;
+        document.getElementById('currentStep').textContent = data.currentStep || '-';
+        document.getElementById('recordsImported').textContent = data.recordsImported.toLocaleString();
+        document.getElementById('countriesProcessed').textContent = data.countriesProcessed;
+
+        // Update progress bar (rough estimate based on countries processed)
+        const estimatedProgress = data.status === 'Completed' ? 100 :
+            Math.min((data.countriesProcessed / 15) * 100, 95);
+        document.getElementById('progressBar').style.width = estimatedProgress + '%';
+        document.getElementById('progressBar').textContent = Math.round(estimatedProgress) + '%';
+
+        if (data.errorMessage) {
+            document.getElementById('currentStep').innerHTML =
+                `<span class="text-danger">${data.errorMessage}</span>`;
+        }
+    }
+
+    // Test Connection
+    document.getElementById('testConnectionBtn').addEventListener('click', async function() {
+        try {
+            const response = await fetch('/api/tradeimport/test-connection');
+            const data = await response.json();
+
+            if (data.connected) {
+                alert('✅ Database connection successful!');
+            } else {
+                alert('❌ Database connection failed. Check your .env configuration.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error testing connection: ' + error.message);
+        }
+    });
+
+    // Load Statistics
+    document.getElementById('loadStatsBtn').addEventListener('click', async function() {
+        const year = parseInt(document.getElementById('yearSelect').value);
+
+        if (!year) {
+            alert('Please select a year first');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/tradeimport/statistics/${year}`);
+            const data = await response.json();
+
+            let html = '<h6>Table Counts:</h6><table class="table table-sm"><thead><tr><th>Table</th><th>Rows</th></tr></thead><tbody>';
+
+            data.tableCounts.forEach(tc => {
+                html += `<tr><td>${tc.table_name}</td><td>${tc.row_count.toLocaleString()}</td></tr>`;
+            });
+            html += '</tbody></table>';
+
+            html += '<h6 class="mt-3">Countries:</h6><table class="table table-sm"><thead><tr><th>Country</th><th>Tradeflows</th><th>Records</th></tr></thead><tbody>';
+            data.countries.forEach(c => {
+                html += `<tr><td>${c.country_code}</td><td>${c.tradeflow_count}</td><td>${c.total_trade_records.toLocaleString()}</td></tr>`;
+            });
+            html += '</tbody></table>';
+
+            document.getElementById('statisticsContent').innerHTML = html;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error loading statistics: ' + error.message);
+        }
+    });
+</script>
+}

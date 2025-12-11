@@ -1,0 +1,41 @@
+﻿@model IEnumerable<string>
+
+
+<h1>Upload</h1>
+
+
+
+<form action="Upload" method="post" enctype="multipart/form-data">
+
+    <label>Table Name:</label>
+    <input type="text" name="tableName" placeholder="Enter table name" />
+    <br /><br />
+
+    <label>Select CSV File:</label>
+    <input type="file" name="file" />
+    <br /><br />
+
+    <button type="submit">Upload</button>
+</form>
+
+
+
+
+<div>
+    @foreach (var t in Model)
+    {
+        <p>@t</p>
+    }
+</div>
+
+
+
+
+<script>
+
+
+
+</script>
+
+
+

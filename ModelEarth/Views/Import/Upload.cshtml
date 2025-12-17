@@ -1,41 +1,91 @@
 ﻿@model IEnumerable<string>
 
+<h1 class="page-title">Upload Data To Table</h1>
 
-<h1>Upload</h1>
+<form class="upload-form" action="Upload" method="post" enctype="multipart/form-data">
 
+    <label class="form-label" for="tableName">Table Name:</label>
+    <select name="tableName" id="tableName" class="form-select">
+        @foreach (var t in Model)
+        {
+            <option value="@t">@t</option>
+        }
+    </select>
 
-
-<form action="Upload" method="post" enctype="multipart/form-data">
-
-    <label>Table Name:</label>
-    <input type="text" name="tableName" placeholder="Enter table name" />
     <br /><br />
 
-    <label>Select CSV File:</label>
-    <input type="file" name="file" />
+    <label class="form-label" for="file">Select File:</label>
+    <input type="file" name="file" id="file" class="form-input" />
+
     <br /><br />
 
-    <button type="submit">Upload</button>
+    <button type="submit" class="btn-primary">Upload</button>
 </form>
 
-
-
-
-<div>
-    @foreach (var t in Model)
-    {
-        <p>@t</p>
+<style> 
+    .page-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
     }
-</div>
 
+    /* Form container stays left-aligned and simple */
+    .upload-form {
+        max-width: 420px;
+    }
 
+    /* Labels */
+    .form-label {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #374151;
+    }
 
+    /* Dropdown + file input */
+    .form-select,
+    .form-input {
+        width: 100%;
+        padding: 0.45rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1; /* subtle light border */
+        background-color: #fff;
+        font-size: 0.95rem;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
 
-<script>
+        /* Focus effect: clean + modern */
+        .form-select:focus,
+        .form-input:focus {
+            border-color: #3b82f6; /* soft blue accent */
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+            outline: none;
+        }
 
+        /* Hover effect */
+        .form-select:hover,
+        .form-input:hover {
+            border-color: #94a3b8;
+        }
 
+    /* Button */
+    .btn-primary {
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        background-color: #3b82f6; /* clean blue */
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.15s ease, transform 0.15s ease;
+    }
 
-</script>
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
 
-
-
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+</style>

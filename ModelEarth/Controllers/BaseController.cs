@@ -9,6 +9,7 @@ namespace ModelEarth.Controllers
     {
         protected const string ConnectionsCookieKey = "Connections";
 
+
         protected void SaveConnectionsToCookie(List<DBConn> connections)
         {
             var json = JsonSerializer.Serialize(

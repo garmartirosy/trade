@@ -15,8 +15,8 @@ try
     // Read and execute migration files
     var scriptFiles = new[]
     {
-        @"..\ModelEarth\DB Scripts\Postgres\001_CreateTradeTable.sql",
-        @"..\ModelEarth\DB Scripts\Postgres\002_CreateAdditionalTables.sql"
+        @"..\IndustryDB\DB Scripts\Postgres\001_CreateTradeTable.sql",
+        @"..\IndustryDB\DB Scripts\Postgres\002_CreateAdditionalTables.sql"
     };
 
     foreach (var scriptFile in scriptFiles)

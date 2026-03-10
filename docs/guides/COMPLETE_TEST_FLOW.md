@@ -39,7 +39,7 @@ Result after migrations:
 └──────────────────────────────────────────────────────────────┘
 
 What: .NET app reads CSVs and inserts rows into tables
-Tool: ModelEarth web application
+Tool: IndustryDB web application
 Input: CSV files from trade-data/year/{year}/{country}/{tradeflow}/*.csv
 Output: Populated database tables
 
@@ -70,7 +70,7 @@ cd DbMigrate
 dotnet run
 
 # 3. Start web app
-cd ../ModelEarth
+cd ../IndustryDB
 dotnet run
 
 # 4. Open browser → http://localhost:5094/TradeImport
@@ -99,7 +99,7 @@ dotnet run
 ```bash
 # 1. Clone exiobase repo (if not exists)
 cd ../..  # Go to parent folder
-git clone https://github.com/ModelEarth/exiobase.git
+git clone https://github.com/IndustryDB/exiobase.git
 cd exiobase/tradeflow
 
 # 2. Install Python dependencies
@@ -127,7 +127,7 @@ ls ../../trade-data/year/2022/US/imports/
 # Should see: trade.csv, trade_employment.csv, trade_factor.csv, etc.
 
 # 7. Now import with .NET app:
-cd ../../trade-main/ModelEarth
+cd ../../trade-main/IndustryDB
 dotnet run
 # Browser → http://localhost:5094/TradeImport
 # Year: 2022, Countries: US
@@ -251,7 +251,7 @@ Created tables:
 
 ### **3. Start the Web Application**
 ```bash
-cd ../ModelEarth
+cd ../IndustryDB
 dotnet run
 ```
 
@@ -323,7 +323,7 @@ SELECT COUNT(*) FROM public.trade_employment;
 └─────────────────────────────────────────────────────────────┘
 
 MAPPING CODE: CsvImportService.GetTableNameFromFileName()
-Location: ModelEarth/Services/CsvImportService.cs:125-144
+Location: IndustryDB/Services/CsvImportService.cs:125-144
 ```
 
 ---
@@ -376,7 +376,7 @@ A: No! Only once. After that, tables exist and you can import/re-import data any
 
 Once Docker Desktop is running:
 ```bash
-docker-compose up -d && cd DbMigrate && dotnet run && cd ../ModelEarth && dotnet run
+docker-compose up -d && cd DbMigrate && dotnet run && cd ../IndustryDB && dotnet run
 ```
 
 Then open: http://localhost:5094/TradeImport 🚀

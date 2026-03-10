@@ -8,7 +8,7 @@ Complete documentation for the CSV-to-SQL trade data import system.
 - **[Getting Started Guide](guides/GETTING_STARTED.md)** - Installation, setup, and first import
 - **[Complete Test Flow](guides/COMPLETE_TEST_FLOW.md)** - End-to-end testing scenarios
 - **[Start Database](guides/START_DATABASE.md)** - Docker PostgreSQL setup
-- **[WebRoot Setup](guides/WEBROOT_SETUP_EXPLAINED.md)** - ModelEarth ecosystem overview
+- **[WebRoot Setup](guides/WEBROOT_SETUP_EXPLAINED.md)** - IndustryDB ecosystem overview
 
 ### Technical Documentation
 - **[System Architecture](ARCHITECTURE.md)** - Complete architecture with diagrams
@@ -25,7 +25,7 @@ docker-compose up -d
 cd DbMigrate && dotnet run
 
 # 3. Start application
-cd ../ModelEarth && dotnet run
+cd ../IndustryDB && dotnet run
 
 # 4. Open browser
 http://localhost:5094/TradeImport
@@ -53,7 +53,7 @@ docs/
 │   ├── DOTNET_CODE_GUIDE.md     (.NET 8.0 codebase guide)
 │   ├── COMPLETE_TEST_FLOW.md    (Testing scenarios)
 │   ├── START_DATABASE.md        (Docker setup)
-│   └── WEBROOT_SETUP_EXPLAINED.md (ModelEarth ecosystem)
+│   └── WEBROOT_SETUP_EXPLAINED.md (IndustryDB ecosystem)
 └── testing/
     └── TESTING_GUIDE.md         (Test documentation)
 ```
@@ -62,7 +62,7 @@ docs/
 
 - **Main README**: [../README.md](../README.md)
 - **GitHub Issue #30**: https://github.com/modelearth/trade/issues/30
-- **CSV Data Source**: https://github.com/ModelEarth/trade-data
+- **CSV Data Source**: https://github.com/IndustryDB/trade-data
 - **Trade Visualization**: https://model.earth/profile/footprint/
 
 ## 💡 Need Help?

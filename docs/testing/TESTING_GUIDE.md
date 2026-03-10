@@ -43,7 +43,7 @@ FluentAssertions - Assertion library
 ### Test Project Structure
 
 ```
-ModelEarth.Tests/
+IndustryDB.Tests/
 ├── Controllers/
 │   └── TradeImportControllerTests.cs    (12 tests)
 │
@@ -56,14 +56,14 @@ ModelEarth.Tests/
 ├── TestData/
 │   └── sample_trade.csv                 (Sample CSV for integration tests)
 │
-└── ModelEarth.Tests.csproj
+└── IndustryDB.Tests.csproj
 ```
 
 ### Test Dependency Diagram
 
 ```
 ┌──────────────────────────────────────────────────┐
-│          Test Project (ModelEarth.Tests)         │
+│          Test Project (IndustryDB.Tests)         │
 │                                                   │
 │  ┌────────────────────────────────────────────┐ │
 │  │          Testing Libraries                  │ │
@@ -97,7 +97,7 @@ ModelEarth.Tests/
                     │ References
                     ▼
 ┌──────────────────────────────────────────────────┐
-│      Application Project (ModelEarth)            │
+│      Application Project (IndustryDB)            │
 │  • Controllers/                                   │
 │  • Services/                                      │
 │  • Models/                                        │
@@ -112,7 +112,7 @@ ModelEarth.Tests/
 
 ```bash
 # Run all tests
-cd ModelEarth.Tests
+cd IndustryDB.Tests
 dotnet test
 
 # Run with detailed output
@@ -161,11 +161,11 @@ Test run successful!
 ```
 Failed Test Example:
 ───────────────────
-  Failed ModelEarth.Tests.Controllers.TradeImportControllerTests.CreateDatabase_Should_Return_BadRequest_When_Year_Is_Invalid [10 ms]
+  Failed IndustryDB.Tests.Controllers.TradeImportControllerTests.CreateDatabase_Should_Return_BadRequest_When_Year_Is_Invalid [10 ms]
   Error Message:
    Expected result to be of type BadRequestObjectResult, but found OkObjectResult.
   Stack Trace:
-     at ModelEarth.Tests.Controllers.TradeImportControllerTests.CreateDatabase_Should_Return_BadRequest_When_Year_Is_Invalid()
+     at IndustryDB.Tests.Controllers.TradeImportControllerTests.CreateDatabase_Should_Return_BadRequest_When_Year_Is_Invalid()
 ```
 
 ---
@@ -691,7 +691,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace ModelEarth.Tests.Services
+namespace IndustryDB.Tests.Services
 {
     public class YourNewTests
     {

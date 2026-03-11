@@ -7,7 +7,7 @@
 ### 1. Prerequisites
 - .NET 8.0 SDK
 - PostgreSQL database (Azure or local)
-- CSV files from [trade-data repository](https://github.com/ModelEarth/trade-data)
+- CSV files from [trade-data repository](https://github.com/IndustryDB/trade-data)
 
 ### 2. Setup
 
@@ -36,14 +36,14 @@ TRADE_DATA_REPO_PATH=../trade-data
 4. **Run database migrations**
 ```bash
 # Connect to your PostgreSQL database and run these scripts in order:
-# 1. ModelEarth/DB Scripts/Postgres/001_CreateTradeTable.sql
-# 2. ModelEarth/DB Scripts/Postgres/002_CreateAdditionalTables.sql
-# 3. ModelEarth/DB Scripts/Postgres/003_CreateStoredProcs.sql
+# 1. IndustryDB/DB Scripts/Postgres/001_CreateTradeTable.sql
+# 2. IndustryDB/DB Scripts/Postgres/002_CreateAdditionalTables.sql
+# 3. IndustryDB/DB Scripts/Postgres/003_CreateStoredProcs.sql
 ```
 
 5. **Run the application**
 ```bash
-cd ModelEarth
+cd IndustryDB
 dotnet restore
 dotnet run
 ```
@@ -181,7 +181,7 @@ trade-data/
 ### Run Tests
 ```bash
 # Run all tests
-cd ModelEarth.Tests
+cd IndustryDB.Tests
 dotnet test
 
 # Run unit tests only
@@ -197,13 +197,13 @@ dotnet test --filter "Category=Integration"
 - ✅ TradeImportController (API endpoints, validation)
 - ✅ Integration tests (end-to-end import workflow)
 
-See [ModelEarth.Tests/README.md](ModelEarth.Tests/README.md) for detailed testing documentation.
+See [IndustryDB.Tests/README.md](IndustryDB.Tests/README.md) for detailed testing documentation.
 
 ## Development
 
 ### Project Structure
 ```
-ModelEarth/
+IndustryDB/
 ├── Controllers/
 │   └── TradeImportController.cs
 ├── Models/Data/
@@ -221,7 +221,7 @@ ModelEarth/
     ├── 002_CreateAdditionalTables.sql
     └── 003_CreateStoredProcs.sql
 
-ModelEarth.Tests/
+IndustryDB.Tests/
 ├── Controllers/
 │   └── TradeImportControllerTests.cs
 ├── Services/
@@ -248,7 +248,7 @@ ModelEarth.Tests/
   - [Testing Guide](docs/testing/TESTING_GUIDE.md)
   - [Complete Test Flow](docs/guides/COMPLETE_TEST_FLOW.md)
 - **GitHub Issue**: [#30 - Generate trade flow SQL](https://github.com/modelearth/trade/issues/30)
-- **CSV Data Source**: [ModelEarth/trade-data](https://github.com/ModelEarth/trade-data)
+- **CSV Data Source**: [IndustryDB/trade-data](https://github.com/IndustryDB/trade-data)
 - **Trade Visualization**: https://model.earth/profile/footprint/
 
 ## License

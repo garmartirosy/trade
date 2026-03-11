@@ -88,7 +88,7 @@ This will:
 After migrations are complete:
 
 ```bash
-cd ModelEarth
+cd IndustryDB
 dotnet run
 # Navigate to: http://localhost:5094/TradeImport
 ```

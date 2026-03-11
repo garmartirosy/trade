@@ -2,7 +2,7 @@
 
 ## Overview: The Big Picture
 
-This project is part of the **ModelEarth ecosystem** which processes global trade data for environmental impact analysis.
+This project is part of the **IndustryDB ecosystem** which processes global trade data for environmental impact analysis.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -53,14 +53,14 @@ This project is part of the **ModelEarth ecosystem** which processes global trad
 
 ## The WebRoot Folder Structure
 
-The ModelEarth project uses a "webroot" pattern where multiple repos sit side-by-side:
+The IndustryDB project uses a "webroot" pattern where multiple repos sit side-by-side:
 
 ```
 C:\Users\srich\Downloads\
 └── webroot/                    (conceptual - your folder structure)
     ├── trade-main/             ✅ THIS REPO - .NET import system
-    │   ├── ModelEarth/         (ASP.NET app)
-    │   ├── ModelEarth.Tests/   (35 passing tests)
+    │   ├── IndustryDB/         (ASP.NET app)
+    │   ├── IndustryDB.Tests/   (35 passing tests)
     │   ├── .env                (points to ../trade-data)
     │   └── docs/               (comprehensive documentation)
     │
@@ -253,7 +253,7 @@ cd DbMigrate
 dotnet run
 
 # 4. Start the application:
-cd ../ModelEarth
+cd ../IndustryDB
 dotnet run
 
 # 5. Open browser:
@@ -270,7 +270,7 @@ http://localhost:5094/TradeImport
 ```bash
 # 1. Clone exiobase repo (if not exists):
 cd ../..  # Go to webroot level
-git clone https://github.com/ModelEarth/exiobase.git
+git clone https://github.com/IndustryDB/exiobase.git
 
 # 2. Edit config.yaml:
 cd exiobase/tradeflow
@@ -304,7 +304,7 @@ python main.py
 │  STEP 2: Import to Database (Repeatable anytime)             │
 └──────────────────────────────────────────────────────────────┘
 
-cd trade-main/ModelEarth
+cd trade-main/IndustryDB
 dotnet run
 # Navigate to: http://localhost:5094/TradeImport
 # Select Year: 2022, Countries: IN
@@ -367,8 +367,8 @@ services:
 - **Live Visualization:** https://model.earth/profile/footprint/
 - **Comparison Tool:** https://model.earth/comparison
 - **Exiobase Data:** https://zenodo.org/record/5589597
-- **Python Scripts:** https://github.com/ModelEarth/exiobase/tree/main/tradeflow
-- **Trade Data Repo:** https://github.com/ModelEarth/trade-data
+- **Python Scripts:** https://github.com/IndustryDB/exiobase/tree/main/tradeflow
+- **Trade Data Repo:** https://github.com/IndustryDB/trade-data
 
 ---
 

@@ -37,7 +37,7 @@ Database (PostgreSQL)
 ## Project Structure
 
 ```
-ModelEarth/                          # Main ASP.NET Core MVC application
+IndustryDB/                          # Main ASP.NET Core MVC application
 ├── Controllers/
 │   └── TradeImportController.cs     # REST API for import operations
 ├── Models/Data/
@@ -58,7 +58,7 @@ ModelEarth/                          # Main ASP.NET Core MVC application
 │   └── 003_CreateStoredProcs.sql    # Stored procedures (future use)
 └── Program.cs                       # Application bootstrap & DI setup
 
-ModelEarth.Tests/                    # xUnit test project
+IndustryDB.Tests/                    # xUnit test project
 ├── Controllers/
 │   └── TradeImportControllerTests.cs   # API endpoint tests (12 tests)
 ├── Services/
@@ -248,7 +248,7 @@ Similar structure for 8 additional tables: `trade_employment`, `trade_factor`, `
 
 ```bash
 # Run all tests
-cd ModelEarth.Tests
+cd IndustryDB.Tests
 dotnet test
 
 # Run specific test suite

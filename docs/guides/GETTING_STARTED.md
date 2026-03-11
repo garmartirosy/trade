@@ -82,8 +82,8 @@ cd trade
 # View project structure
 ls
 # Output:
-# ModelEarth/
-# ModelEarth.Tests/
+# IndustryDB/
+# IndustryDB.Tests/
 # docs/
 # README.md
 # documentation.md
@@ -95,7 +95,7 @@ ls
 ```bash
 # Clone the trade-data repository (contains CSV files)
 cd ..
-git clone https://github.com/ModelEarth/trade-data.git
+git clone https://github.com/IndustryDB/trade-data.git
 
 # Verify CSV files exist
 ls trade-data/year/2022/US/imports/
@@ -138,9 +138,9 @@ CREATE DATABASE exiobase;
 psql -U postgres -d exiobase
 
 # Run migration scripts in order
-\i ModelEarth/DB\ Scripts/Postgres/001_CreateTradeTable.sql
-\i ModelEarth/DB\ Scripts/Postgres/002_CreateAdditionalTables.sql
-\i ModelEarth/DB\ Scripts/Postgres/003_CreateStoredProcs.sql
+\i IndustryDB/DB\ Scripts/Postgres/001_CreateTradeTable.sql
+\i IndustryDB/DB\ Scripts/Postgres/002_CreateAdditionalTables.sql
+\i IndustryDB/DB\ Scripts/Postgres/003_CreateStoredProcs.sql
 
 # Verify tables were created
 \dt public.*
@@ -216,7 +216,7 @@ ls ../trade-data/year/2022/
 
 ```bash
 # Navigate to application directory
-cd ModelEarth
+cd IndustryDB
 
 # Restore NuGet packages
 dotnet restore
@@ -239,7 +239,7 @@ info: Microsoft.Hosting.Lifetime[0]
 info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Development
 info: Microsoft.Hosting.Lifetime[0]
-      Content root path: C:\...\trade\ModelEarth
+      Content root path: C:\...\trade\IndustryDB
 ```
 
 ### Access the Application
@@ -441,7 +441,7 @@ ls ../trade-data/year/2022/US/imports/
 
 # If missing, clone trade-data repo
 cd ..
-git clone https://github.com/ModelEarth/trade-data.git
+git clone https://github.com/IndustryDB/trade-data.git
 cd trade
 ```
 
@@ -466,7 +466,7 @@ lsof -i :5094
 kill -9 <process_id>
 
 # Option 2: Change port in launchSettings.json
-# Edit ModelEarth/Properties/launchSettings.json
+# Edit IndustryDB/Properties/launchSettings.json
 # Change "applicationUrl": "http://localhost:5095"
 ```
 
@@ -488,9 +488,9 @@ CREATE DATABASE exiobase;
 \q
 
 # Run migrations again
-psql -U postgres -d exiobase -f ModelEarth/DB\ Scripts/Postgres/001_CreateTradeTable.sql
-psql -U postgres -d exiobase -f ModelEarth/DB\ Scripts/Postgres/002_CreateAdditionalTables.sql
-psql -U postgres -d exiobase -f ModelEarth/DB\ Scripts/Postgres/003_CreateStoredProcs.sql
+psql -U postgres -d exiobase -f IndustryDB/DB\ Scripts/Postgres/001_CreateTradeTable.sql
+psql -U postgres -d exiobase -f IndustryDB/DB\ Scripts/Postgres/002_CreateAdditionalTables.sql
+psql -U postgres -d exiobase -f IndustryDB/DB\ Scripts/Postgres/003_CreateStoredProcs.sql
 ```
 
 ---
@@ -501,7 +501,7 @@ psql -U postgres -d exiobase -f ModelEarth/DB\ Scripts/Postgres/003_CreateStored
 
 ```bash
 # Navigate to test project
-cd ModelEarth.Tests
+cd IndustryDB.Tests
 
 # Run all tests
 dotnet test
@@ -581,10 +581,10 @@ Now that you have the application running:
 
 ```bash
 # Start application
-cd ModelEarth && dotnet run
+cd IndustryDB && dotnet run
 
 # Run tests
-cd ModelEarth.Tests && dotnet test
+cd IndustryDB.Tests && dotnet test
 
 # Build solution
 dotnet build
@@ -603,16 +603,16 @@ tail -f logs/application.log
 
 ```
 .env                           - Environment configuration
-ModelEarth/Program.cs          - Application entry point
-ModelEarth/appsettings.json   - App configuration
-ModelEarth/DB Scripts/         - Database migrations
+IndustryDB/Program.cs          - Application entry point
+IndustryDB/appsettings.json   - App configuration
+IndustryDB/DB Scripts/         - Database migrations
 ```
 
 ### Support
 
 - **Documentation**: See `/docs` folder
 - **Issues**: https://github.com/modelearth/trade/issues
-- **Trade Data**: https://github.com/ModelEarth/trade-data
+- **Trade Data**: https://github.com/IndustryDB/trade-data
 
 ---
 
